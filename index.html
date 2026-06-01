@@ -469,29 +469,6 @@
   }
 
   .skill-name { color: var(--text); }
-  .skill-pct { color: var(--text-dim); }
-
-  .skill-bar-bg {
-    height: 2px;
-    background: var(--border);
-    width: 100%;
-  }
-
-  .skill-bar-fill {
-    height: 100%;
-    background: var(--green);
-    position: relative;
-  }
-
-  .skill-bar-fill::after {
-    content: '';
-    position: absolute;
-    right: 0; top: -2px;
-    width: 4px; height: 6px;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-  }
-
   /* Certs */
   .certs-row {
     display: flex;
@@ -828,26 +805,101 @@
     <div class="skills-grid">
 
       <div class="skill-category">
-        <div class="skill-cat-title">// Network & Analysis</div>
+        <div class="skill-cat-title">// Vulnerability Management</div>
         <div class="skill-item">
-          <div class="skill-name-row"><span class="skill-name">Wireshark</span><span class="skill-pct">75%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:75%"></div></div>
+          <div class="skill-name-row"><span class="skill-name">Tenable Nessus</span></div>
         </div>
         <div class="skill-item">
-          <div class="skill-name-row"><span class="skill-name">TCP/IP Protocols</span><span class="skill-pct">80%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:80%"></div></div>
+          <div class="skill-name-row"><span class="skill-name">Credentialed & Uncredentialed Scanning</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">CVSS Scoring & Prioritization</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">CVE Analysis & NVD Research</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Remediation Planning & Risk Triage</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Attack Surface Reduction</span></div>
         </div>
       </div>
 
       <div class="skill-category">
-        <div class="skill-cat-title">// Operating Systems</div>
+        <div class="skill-cat-title">// Network & Traffic Analysis</div>
         <div class="skill-item">
-          <div class="skill-name-row"><span class="skill-name">Linux (Arch)</span><span class="skill-pct">85%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:85%"></div></div>
+          <div class="skill-name-row"><span class="skill-name">Wireshark</span></div>
         </div>
         <div class="skill-item">
-          <div class="skill-name-row"><span class="skill-name">Windows 11 / Active Dir</span><span class="skill-pct">65%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:65%"></div></div>
+          <div class="skill-name-row"><span class="skill-name">TCP/IP Protocols</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">DNS & HTTP Analysis</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Packet Capture & Analysis</span></div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <div class="skill-cat-title">// Operating Systems & CLI</div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Linux (Arch)</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Windows 11</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Active Directory</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Command Line Interface (CLI)</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">PowerShell</span></div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <div class="skill-cat-title">// Security Concepts</div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Risk Management Frameworks</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">CIA Triad & Access Control</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">NERC CIP Awareness</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Vulnerability Management Lifecycle</span></div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <div class="skill-cat-title">// Documentation & Ticketing</div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Deskpro (Ticketing Platform)</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Technical Report Writing</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Exception & Remediation Documentation</span></div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <div class="skill-cat-title">// Tools & Platforms</div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">VirtualBox</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Metasploitable 2</span></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">GitHub & Version Control</span></div>
         </div>
       </div>
 
