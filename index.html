@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maximilian_Christiansen // Security Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-dark: #003d1f;
+    --green-glow: rgba(0,255,136,0.15);
+    --bg: #080c0a;
+    --bg2: #0d1410;
+    --bg3: #111a14;
+    --border: rgba(0,255,136,0.2);
+    --border-bright: rgba(0,255,136,0.5);
+    --text: #c8ffd9;
+    --text-dim: rgba(200,255,217,0.5);
+    --red: #ff4466;
+    --amber: #ffcc00;
+    --cyan: #00ddff;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Rajdhani', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(8,12,10,0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav ul a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--green); }
+
+  .nav-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--green-dim);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section { padding: 5rem 0 3rem; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 80px;
+  }
+
+  .hero-tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--green);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 .highlight { color: var(--green); }
+
+  .hero-subtitle {
+    font-family: var(--display);
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+  }
+
+  .terminal-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 0.75rem 1.25rem;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 3rem;
+  }
+
+  .terminal-line .prompt { color: var(--green); }
+  .terminal-line .cmd { color: var(--cyan); }
+
+  .cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border-bright);
+    background: transparent;
+    color: var(--green);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--green-glow);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn:hover::before { opacity: 1; }
+  .btn:hover { border-color: var(--green); }
+
+  .btn-ghost {
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: var(--border-bright); }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-bright), transparent);
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .about-text p strong { color: var(--green); font-weight: 400; }
+
+  .about-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg2);
+    font-size: 12px;
+  }
+
+  .stat-row:nth-child(odd) { background: var(--bg3); }
+  .stat-label { color: var(--text-dim); }
+  .stat-value { color: var(--green); }
+
+  /* ── LABS ── */
+  .labs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .lab-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+
+  .lab-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .lab-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+
+  .lab-card:hover::before { opacity: 1; }
+
+  .lab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .lab-title {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.5px;
+  }
+
+  .lab-status {
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+
+  .status-active { color: var(--green); border-color: var(--green); }
+  .status-wip { color: var(--amber); border-color: var(--amber); }
+  .status-planned { color: var(--text-dim); border-color: var(--border); }
+
+  .lab-desc {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+
+  .lab-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+  }
+
+  .tag {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid rgba(0,221,255,0.25);
+    padding: 2px 8px;
+    background: rgba(0,221,255,0.05);
+  }
+
+  .lab-links {
+    display: flex;
+    gap: 1rem;
+    font-size: 12px;
+  }
+
+  .lab-link {
+    color: var(--green-dim);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .lab-link:hover { color: var(--green); }
+  .lab-link::before { content: '→ '; }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-category {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .skill-cat-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skill-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .skill-name-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+
+  .skill-name { color: var(--text); }
+  .skill-pct { color: var(--text-dim); }
+
+  .skill-bar-bg {
+    height: 2px;
+    background: var(--border);
+    width: 100%;
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    background: var(--green);
+    position: relative;
+  }
+
+  .skill-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: -2px;
+    width: 4px; height: 6px;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+  }
+
+  /* Certs */
+  .certs-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .cert-badge {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  .cert-badge:hover { border-color: var(--border-bright); }
+
+  .cert-icon {
+    font-size: 18px;
+    color: var(--green);
+  }
+
+  .cert-name { color: var(--text); }
+  .cert-year { color: var(--text-dim); font-size: 11px; }
+
+  /* ── CONTACT ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .contact-intro {
+    color: var(--text-dim);
+    line-height: 1.9;
+    margin-bottom: 2rem;
+  }
+
+  .contact-intro strong { color: var(--text); font-weight: 400; }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.875rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .contact-link:hover {
+    background: var(--bg3);
+    border-color: var(--border-bright);
+    color: var(--text);
+  }
+
+  .contact-link .link-icon { color: var(--green); font-size: 16px; }
+  .contact-link .link-platform {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  .terminal-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .terminal-titlebar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .tb-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  .td-red { background: var(--red); }
+  .td-amber { background: var(--amber); }
+  .td-green { background: var(--green); }
+
+  .terminal-body {
+    padding: 1rem 1.25rem;
+    line-height: 2;
+  }
+
+  .t-comment { color: var(--text-dim); }
+  .t-key { color: var(--cyan); }
+  .t-val { color: var(--green); }
+  .t-str { color: #ff9e6a; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4rem;
+  }
+
+  footer span { color: var(--green); }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav ul { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">MAXIMILIAN_<span>CHRISTIANSEN</span></div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#labs">Labs</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    AVAILABLE FOR HIRE
+  </div>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-tag">Security Portfolio</div>
+    <h1>MAXIMILIAN<br><span class="highlight">CHRISTIANSEN</span></h1>
+    <p class="hero-subtitle">Aspiring Cybersecurity Professional</p>
+    <div class="terminal-line">
+      <span class="prompt">user@arch:~$</span>
+      <span class="cmd">whoami</span>
+      &nbsp;→&nbsp; defender · analyst · builder
+      <span class="cursor"></span>
+    </div>
+    <div class="hero-cta">
+      <a href="#labs" class="btn">View Labs</a>
+      <a href="#contact" class="btn btn-ghost">Contact Me</a>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header">
+      <span class="section-tag">01 //</span>
+      <h2>About Me</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm an aspiring <strong>cybersecurity professional</strong> based in Columbus, OH with a passion for threat detection, vulnerability research, and security automation. I approach security with an attacker's mindset and a defender's discipline.
+        </p>
+        <p>
+          I dual-boot <strong>Arch Linux</strong> and <strong>Windows 11</strong>, run my own home lab, and document everything. I believe the best security professionals are obsessive learners who never stop breaking and rebuilding things.
+        </p>
+        <p style="margin-top:2rem;">
+          <a href="#labs" class="btn" style="display:inline-flex;">Explore My Labs</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- LABS -->
+  <section id="labs">
+    <div class="section-header">
+      <span class="section-tag">02 //</span>
+      <h2>Labs & Projects</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="labs-grid">
+
+      <div class="lab-card">
+        <div class="lab-header">
+          <div class="lab-title">Packet Capture Lab</div>
+          <div class="lab-status status-active">Completed</div>
+        </div>
+        <p class="lab-desc">Capture and analyze network traffic using Wireshark. Identify cleartext credentials, suspicious DNS queries, and anomalous patterns.</p>
+        <div class="lab-tags">
+          <span class="tag">Wireshark</span>
+          <span class="tag">Network</span>
+          <span class="tag">PCAP</span>
+        </div>
+        <div class="lab-links">
+          <a href="labs/packet-capture.html" class="lab-link">Writeup</a>
+          <a href="Labs\Web-browsing packet capture.pcapng" class="lab-link">Pcap file</a>
+        </div>
+      </div>
+
+      <div class="lab-card">
+        <div class="lab-header">
+          <div class="lab-title">Tenable Nessus Essentials Vulnerability Scan</div>
+          <div class="lab-status status-active">Completed</div>
+        </div>
+        <p class="lab-desc">Full vulnerability management lifecycle using Tenable Nessus Essentials — credentialed scan of a Metasploitable VM, documented findings with CVSS scores, remediation steps, and rescan verification.</p>
+        <div class="lab-tags">
+          <span class="tag">Nessus</span>
+          <span class="tag">Tenable</span>
+          <span class="tag">Vulnerability Management</span>
+          <span class="tag">Metasploitable</span>
+          <span class="tag">CVSS</span>
+        </div>
+        <div class="lab-links">
+          <a href="Labs/vulnerability-management.html" class="lab-link">Writeup</a>
+        </div>
+      </div>
+
+      <div class="lab-card">
+        <div class="lab-header">
+          <div class="lab-title">Home SIEM Lab</div>
+          <div class="lab-status status-wip">In Progress</div>
+        </div>
+        <p class="lab-desc">Deploy Wazuh SIEM in a VM, ingest logs from Windows 11, write custom detection rules, and document real alert triage.</p>
+        <div class="lab-tags">
+          <span class="tag">Wazuh</span>
+          <span class="tag">Log Analysis</span>
+          <span class="tag">Detection</span>
+          <span class="tag">Elastic</span>
+        </div>
+        <div class="lab-links">
+          <a href="#" class="lab-link">Writeup</a>
+        </div>
+      </div>
+
+      <div class="lab-card">
+        <div class="lab-header">
+          <div class="lab-title">Web App Pentest Lab</div>
+          <div class="lab-status status-planned">Planned</div>
+        </div>
+        <p class="lab-desc">Set up DVWA locally and exploit SQLi, XSS, CSRF, and command injection vulnerabilities. Each finding documented with remediation steps.</p>
+        <div class="lab-tags">
+          <span class="tag">DVWA</span>
+          <span class="tag">SQLi</span>
+          <span class="tag">XSS</span>
+          <span class="tag">Burp Suite</span>
+        </div>
+        <div class="lab-links">
+          <a href="#" class="lab-link">Writeup</a>
+        </div>
+      </div>
+
+      <div class="lab-card">
+        <div class="lab-header">
+          <div class="lab-title">Python Security Toolkit</div>
+          <div class="lab-status status-planned">Planned</div>
+        </div>
+        <p class="lab-desc">A collection of purpose-built security tools: port scanner, log parser, file integrity checker via hashing, and a basic brute-force auditor.</p>
+        <div class="lab-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Scripting</span>
+          <span class="tag">Automation</span>
+          <span class="tag">Tools</span>
+        </div>
+        <div class="lab-links">
+        </div>
+      </div>
+
+      <div class="lab-card">
+        <div class="lab-header">
+          <div class="lab-title">Arch Linux Hardening</div>
+          <div class="lab-status status-planned">Planned</div>
+        </div>
+        <p class="lab-desc">Harden an Arch Linux install against CIS benchmarks — configuring AppArmor, nftables firewall, SSH hardening, auditd, and fail2ban.</p>
+        <div class="lab-tags">
+          <span class="tag">Linux</span>
+          <span class="tag">AppArmor</span>
+          <span class="tag">Hardening</span>
+          <span class="tag">CIS</span>
+        </div>
+        <div class="lab-links">
+          <a href="#" class="lab-link">Writeup</a>
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- SKILLS / CERTS -->
+  <section id="skills">
+    <div class="section-header">
+      <span class="section-tag">03 //</span>
+      <h2>Skills & Certs</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+
+      <div class="skill-category">
+        <div class="skill-cat-title">// Network & Analysis</div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Wireshark</span><span class="skill-pct">75%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:75%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">TCP/IP Protocols</span><span class="skill-pct">80%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:80%"></div></div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <div class="skill-cat-title">// Operating Systems</div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Linux (Arch)</span><span class="skill-pct">85%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name-row"><span class="skill-name">Windows 11 / Active Dir</span><span class="skill-pct">65%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:65%"></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 3rem;">
+      <div class="skill-cat-title" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:1.25rem;">// Certifications & Training</div>
+      <div class="certs-row">
+        <div class="cert-badge">
+          <span class="cert-icon">◈</span>
+          <div>
+            <div class="cert-name">CompTIA Security+</div>
+            <div class="cert-year">May 2026</div>
+          </div>
+        </div>
+        <div class="cert-badge">
+          <span class="cert-icon">◈</span>
+          <div>
+            <div class="cert-name">CompTIA Network+</div>
+            <div class="cert-year">March 2026</div>
+          </div>
+        </div>
+        <div class="cert-badge">
+          <span class="cert-icon">◈</span>
+          <div>
+            <div class="cert-name">Google IT Support Cert</div>
+            <div class="cert-year">October 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-header">
+      <span class="section-tag">04 //</span>
+      <h2>Contact</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <p class="contact-intro">
+          Looking for a <strong>motivated cybersecurity professional</strong> who documents their work, builds real tools, and keeps learning? Let's connect.
+        </p>
+        <div class="contact-links">
+          <a href="www.linkedin.com/in/max-christiansen-4209531a7" class="contact-link">
+            <span class="link-icon">⌥</span>
+            614-338-9251
+            <span class="link-platform">Cell</span>
+          </a>
+          <a href="www.linkedin.com/in/max-christiansen-4209531a7" class="contact-link">
+            <span class="link-icon">⌥</span>
+            www.linkedin.com/in/max-christiansen-4209531a7
+            <span class="link-platform">LinkedIn</span>
+          </a>
+          <a href="mailto:max.christiansen01@gmail.com" class="contact-link">
+            <span class="link-icon">⌥</span>
+            max.christiansen01@gmail.com
+            <span class="link-platform">Email</span>
+          </a>
+        </div>
+      </div>
+      <div class="terminal-block">
+        <div class="terminal-titlebar">
+          <div class="tb-dot td-red"></div>
+          <div class="tb-dot td-amber"></div>
+          <div class="tb-dot td-green"></div>
+          &nbsp; contact.json
+        </div>
+        <div class="terminal-body">
+          <span class="t-comment">// open to opportunities</span><br>
+          {<br>
+          &nbsp;&nbsp;<span class="t-key">"name"</span>: <span class="t-str">"MAXIMILIAN CHRISTIANSEN"</span>,<br>
+          &nbsp;&nbsp;<span class="t-key">"role"</span>: <span class="t-str">"Aspiring Cybersecurity Analyst"</span>,<br>
+          &nbsp;&nbsp;<span class="t-key">"location"</span>: <span class="t-str">"Columbus, OH"</span>,<br>
+          &nbsp;&nbsp;<span class="t-key">"remote"</span>: <span class="t-val">true</span>,<br>
+          &nbsp;&nbsp;<span class="t-key">"available"</span>: <span class="t-val">true</span>,<br>
+          &nbsp;&nbsp;<span class="t-key">"interests"</span>: [<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"SOC Analyst"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Threat Detection"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Pen Testing"</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Linux"</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Cloud Security"</span><br>
+          &nbsp;&nbsp;]<br>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>Maximilian_Christiansen // Security Portfolio</div>
+  <div>Hosted on <span>Netlify</span>.</div>
+  <div style="color:var(--green)">$ _</div>
+</footer>
+
+</body>
+</html>

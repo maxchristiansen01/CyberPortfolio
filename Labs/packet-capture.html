@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Packet Capture Lab // MAX_CHRSITIANSEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-dark: #003d1f;
+    --green-glow: rgba(0,255,136,0.15);
+    --bg: #080c0a;
+    --bg2: #0d1410;
+    --bg3: #111a14;
+    --border: rgba(0,255,136,0.2);
+    --border-bright: rgba(0,255,136,0.5);
+    --text: #c8ffd9;
+    --text-dim: rgba(200,255,217,0.5);
+    --red: #ff4466;
+    --amber: #ffcc00;
+    --cyan: #00ddff;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Rajdhani', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(8,12,10,0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  .nav-back {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-back:hover { color: var(--green); }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 100px 2rem 4rem;
+  }
+
+  /* HERO */
+  .lab-hero {
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .breadcrumb {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .breadcrumb a { color: var(--green); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  .lab-title {
+    font-family: var(--display);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 1rem;
+    letter-spacing: -0.5px;
+  }
+
+  .lab-title span { color: var(--green); }
+
+  .lab-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .meta-item .meta-label { color: var(--green); }
+
+  .tag {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid rgba(0,221,255,0.25);
+    padding: 2px 8px;
+    background: rgba(0,221,255,0.05);
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .lab-summary {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 1.25rem 1.5rem;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.9;
+    margin-top: 1.5rem;
+  }
+
+  .lab-summary strong { color: var(--text); font-weight: 400; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 3.5rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.5px;
+  }
+
+  p {
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    line-height: 1.9;
+  }
+
+  p strong { color: var(--text); font-weight: 400; }
+  p code {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    color: var(--cyan);
+    font-size: 12px;
+  }
+
+  /* COMMAND BLOCKS */
+  .cmd-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    margin: 1.25rem 0;
+  }
+
+  .cmd-titlebar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .td { width: 8px; height: 8px; border-radius: 50%; }
+  .td-red { background: var(--red); }
+  .td-amber { background: var(--amber); }
+  .td-green { background: var(--green); }
+
+  .cmd-body {
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    line-height: 2;
+  }
+
+  .cmd-prompt { color: var(--green); }
+  .cmd-text { color: var(--cyan); }
+  .cmd-output { color: var(--text-dim); }
+  .cmd-comment { color: rgba(200,255,217,0.3); }
+
+  /* FINDINGS */
+  .findings-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .finding-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    position: relative;
+  }
+
+  .finding-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+
+  .finding-info::before { background: var(--cyan); }
+  .finding-warning::before { background: var(--amber); }
+  .finding-critical::before { background: var(--red); }
+
+  .finding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .finding-title {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .severity {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid;
+  }
+
+  .sev-info { color: var(--cyan); border-color: var(--cyan); }
+  .sev-medium { color: var(--amber); border-color: var(--amber); }
+  .sev-high { color: var(--red); border-color: var(--red); }
+
+  .finding-desc {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 0.75rem;
+    line-height: 1.8;
+  }
+
+  .finding-detail {
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-row { display: flex; gap: 12px; }
+  .detail-label { color: var(--green); min-width: 120px; }
+  .detail-val { color: var(--text-dim); }
+
+  /* SCREENSHOT PLACEHOLDER */
+  .screenshot-placeholder {
+    background: var(--bg2);
+    border: 1px dashed var(--border-bright);
+    padding: 2rem;
+    text-align: center;
+    margin: 1.25rem 0;
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .screenshot-placeholder .placeholder-icon {
+    font-size: 24px;
+    color: var(--green);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .screenshot-placeholder .placeholder-label {
+    color: var(--green);
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 13px;
+  }
+
+  /* To add a real screenshot, replace the div with:
+     <img src="../screenshots/your-screenshot.png" alt="description" style="width:100%;border:1px solid var(--border)"> */
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 1px; }
+
+  .step {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    margin-bottom: 2px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    min-width: 28px;
+    height: 28px;
+    background: var(--green-dark);
+    border: 1px solid var(--border-bright);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .step-content { flex: 1; }
+  .step-title {
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .step-desc { color: var(--text-dim); font-size: 13px; line-height: 1.8; }
+
+  /* REMEDIATION */
+  .remediation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rem-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0.875rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .rem-icon { color: var(--green); flex-shrink: 0; }
+
+  /* CONCLUSION */
+  .conclusion-box {
+    background: var(--bg2);
+    border: 1px solid var(--border-bright);
+    padding: 2rem;
+    position: relative;
+  }
+
+  .conclusion-box::before {
+    content: '// CONCLUSION';
+    position: absolute;
+    top: -10px; left: 1rem;
+    background: var(--bg);
+    padding: 0 8px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--green);
+  }
+
+  /* SKILLS BOX */
+  .skills-demonstrated {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.5rem;
+  }
+
+  .skill-pill {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid var(--border-bright);
+    padding: 4px 12px;
+    background: var(--green-glow);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4rem;
+  }
+
+  footer span { color: var(--green); }
+
+  @media (max-width: 768px) {
+    .lab-meta { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">MAXIMILIAN_<span>CHRISTIANSEN</span></a>
+  <a href="../index.html#labs" class="nav-back">← Back to Labs</a>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="lab-hero">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a> / <a href="../index.html#labs">Labs</a> / Packet Capture Lab
+    </div>
+    <h1 class="lab-title">Packet <span>Capture</span> Lab</h1>
+    <div class="lab-meta">
+      <div class="meta-item"><span class="meta-label">DATE //</span> 05.13.2026</div>
+      <div class="meta-item"><span class="meta-label">OS //</span> Arch Linux</div>
+      <div class="meta-item"><span class="meta-label">TOOLS //</span> Wireshark</div>
+    </div>
+    <div class="tags">
+      <span class="tag">Network Analysis</span>
+      <span class="tag">Wireshark</span>
+      <span class="tag">DNS</span>
+      <span class="tag">HTTP</span>
+      <span class="tag">TCP/IP</span>
+      <span class="tag">Traffic Analysis</span>
+    </div>
+    <div class="lab-summary">
+      In this lab I captured and analyzed live network traffic on my Arch Linux machine using <strong>Wireshark</strong>. I examined DNS queries, intercepted unencrypted HTTP traffic, and mapped outbound TCP connection attempts — demonstrating how much sensitive data flows across a network in plain text, and why tools like Wireshark are essential for both attackers and defenders.
+    </div>
+  </div>
+
+  <!-- OBJECTIVE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01 //</span>
+      <h2>Objective</h2>
+    </div>
+    <p>The goal of this lab was to get hands-on experience with packet capture and network traffic analysis — a core skill for SOC analysts, pen testers, and anyone working in network security. Specifically I aimed to:</p>
+    <p>• Capture live traffic on a real network interface<br>
+    • Use display filters to isolate specific protocol traffic<br>
+    • Identify DNS queries and understand passive background traffic<br>
+    • Intercept and read plaintext HTTP data<br>
+    • Map outbound TCP connection attempts using SYN packet analysis</p>
+  </div>
+
+  <!-- ENVIRONMENT -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02 //</span>
+      <h2>Environment & Setup</h2>
+    </div>
+    <p>This lab was performed on a personal machine running <strong>Arch Linux</strong>. No special lab environment or VMs were required — all traffic captured was from the host machine's own network activity.</p>
+
+    <div class="cmd-block">
+      <div class="cmd-titlebar">
+        <div class="td td-red"></div>
+        <div class="td td-amber"></div>
+        <div class="td td-green"></div>
+        &nbsp; terminal — installation
+      </div>
+      <div class="cmd-body">
+        <span class="cmd-comment"># Install Wireshark</span><br>
+        <span class="cmd-prompt">user@arch:~$</span> <span class="cmd-text">sudo pacman -S wireshark-qt</span><br><br>
+        <span class="cmd-comment"># Add user to wireshark group (avoids running as root)</span><br>
+        <span class="cmd-prompt">user@arch:~$</span> <span class="cmd-text">sudo usermod -aG wireshark $USER</span><br><br>
+        <span class="cmd-comment"># Launch Wireshark</span><br>
+        <span class="cmd-prompt">user@arch:~$</span> <span class="cmd-text">wireshark</span>
+      </div>
+    </div>
+
+    <p>Adding my user to the <code>wireshark</code> group is an important security practice — it allows packet capture without running Wireshark as root, following the principle of least privilege.</p>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03 //</span>
+      <h2>Methodology</h2>
+    </div>
+    <p>I followed a structured approach — selecting the active interface, capturing traffic while browsing, then applying display filters to isolate and analyze specific protocol traffic.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Interface Selection</div>
+          <div class="step-desc">Opened Wireshark and identified the active network interface by looking for the live activity graph. Double-clicked to begin capture.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Traffic Generation</div>
+          <div class="step-desc">Browsed several websites during capture to generate realistic traffic. Also visited <code>http://neverssl.com</code> intentionally to generate unencrypted HTTP traffic for analysis.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">DNS Filter Analysis</div>
+          <div class="step-desc">Applied display filter <code>dns</code> to isolate all domain name lookup traffic. Examined query/response pairs and noted domains contacted.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">HTTP Filter Analysis</div>
+          <div class="step-desc">Applied display filter <code>http</code> to isolate unencrypted traffic. Inspected the Hypertext Transfer Protocol layer of GET requests to read plaintext headers.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">TCP SYN Packet Analysis</div>
+          <div class="step-desc">Applied filter <code>tcp.flags.syn == 1</code> to map all outbound connection attempts and identify every server the machine contacted during the capture window.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">Save Capture File</div>
+          <div class="step-desc">Saved capture as <code>capture1.pcap</code> for documentation and future reference.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDINGS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04 //</span>
+      <h2>Findings</h2>
+    </div>
+
+    <div class="findings-grid">
+
+      <div class="finding-card finding-info">
+        <div class="finding-header">
+          <div class="finding-title">Finding 1 — Passive Background DNS Traffic</div>
+          <div class="severity sev-info">Informational</div>
+        </div>
+        <p class="finding-desc">Applying the <code>dns</code> filter revealed that the machine was making DNS lookups to domains I never explicitly visited. The most notable was <code>hulu.vortex</code> — a CDN endpoint contacted automatically by the Hulu app running in the background, with no user interaction.</p>
+        <div class="finding-detail">
+          <div class="detail-row"><span class="detail-label">Filter Used:</span><span class="detail-val">dns</span></div>
+          <div class="detail-row"><span class="detail-label">Domains Observed:</span><span class="detail-val">duckduckgo.com, hulu.vortex (CDN)</span></div>
+          <div class="detail-row"><span class="detail-label">Takeaway:</span><span class="detail-val">Devices generate DNS traffic passively. Background apps constantly phone home.</span></div>
+        </div>
+
+        <img src="../Screenshots/Wireshark photos/dns-filter-photo-1.png" alt="DNS Filter Photo 1" style="width:100%;border:1px solid var(--border);margin-bottom:8px">
+        <img src="../Screenshots/Wireshark photos/dns-filter-photo-2.png" alt="DNS Filter Photo 2" style="width:100%;border:1px solid var(--border)">
+        <img src="../Screenshots/Wireshark photos/dns-hulu.png" alt="description" style="width:100%;border:1px solid var(--border)">
+      </div>
+
+      <div class="finding-card finding-critical">
+        <div class="finding-header">
+          <div class="finding-title">Finding 2 — Plaintext HTTP Traffic Exposure</div>
+          <div class="severity sev-high">High</div>
+        </div>
+        <p class="finding-desc">Filtering for <code>http</code> traffic and inspecting a GET request to <code>neverssl.com</code> revealed fully readable HTTP headers in the packet's Hypertext Transfer Protocol layer — including Host, User-Agent, and Cookie fields. This data was transmitted with zero encryption, meaning anyone on the same network could intercept and read it.</p>
+        <div class="finding-detail">
+          <div class="detail-row"><span class="detail-label">Filter Used:</span><span class="detail-val">http</span></div>
+          <div class="detail-row"><span class="detail-label">Target:</span><span class="detail-val">http://neverssl.com (intentionally unencrypted)</span></div>
+          <div class="detail-row"><span class="detail-label">Data Exposed:</span><span class="detail-val">Host, User-Agent, Cookie headers in plaintext</span></div>
+          <div class="detail-row"><span class="detail-label">Risk:</span><span class="detail-val">Session hijacking, credential theft on shared networks</span></div>
+        </div>
+        <img src="../Screenshots/Wireshark photos/http-filter-photo.png" alt="description" style="width:100%;border:1px solid var(--border)">
+        </div>
+      </div>
+
+      <div class="finding-card finding-warning">
+        <div class="finding-header">
+          <div class="finding-title">Finding 3 — Outbound Connection Mapping via TCP SYN</div>
+          <div class="severity sev-medium">Informational</div>
+        </div>
+        <p class="finding-desc">Filtering for TCP SYN packets revealed every server the machine attempted to connect to during the capture window. Even during a short session, numerous outbound connections were initiated — many from background processes rather than direct user action. This technique is useful for baselining normal behavior and detecting anomalous outbound connections.</p>
+        <div class="finding-detail">
+          <div class="detail-row"><span class="detail-label">Filter Used:</span><span class="detail-val">tcp.flags.syn == 1</span></div>
+          <div class="detail-row"><span class="detail-label">Takeaway:</span><span class="detail-val">SYN filtering is a fast way to map all servers a host is talking to</span></div>
+          <div class="detail-row"><span class="detail-label">SOC Use Case:</span><span class="detail-val">Detecting C2 beaconing or unauthorized outbound connections</span></div>
+        </div>
+
+        <img src="../Screenshots/Wireshark photos/tcp-flags-filter-photo.png" alt="description" style="width:100%;border:1px solid var(--border)">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REMEDIATION -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05 //</span>
+      <h2>Remediation & Recommendations</h2>
+    </div>
+
+    <div class="remediation-list">
+      <div class="rem-item">
+        <span class="rem-icon">▸</span>
+        <div><strong style="color:var(--text)">Always use HTTPS.</strong> Never transmit sensitive data over plain HTTP. Modern browsers flag HTTP sites — heed those warnings. Website owners should enforce HTTPS and implement HSTS.</div>
+      </div>
+      <div class="rem-item">
+        <span class="rem-icon">▸</span>
+        <div><strong style="color:var(--text)">Avoid public/untrusted WiFi for sensitive activity.</strong> On a shared network, anyone can run a packet capture like this one. Use a VPN on public networks.</div>
+      </div>
+      <div class="rem-item">
+        <span class="rem-icon">▸</span>
+        <div><strong style="color:var(--text)">Audit background application traffic.</strong> Applications contact external servers without user knowledge. Regularly review what processes are making network connections using tools like <code>ss</code> or <code>netstat</code>.</div>
+      </div>
+      <div class="rem-item">
+        <span class="rem-icon">▸</span>
+        <div><strong style="color:var(--text)">Use DNS over HTTPS (DoH).</strong> Standard DNS queries are unencrypted and visible to anyone on the network. DoH encrypts DNS traffic, preventing passive DNS surveillance.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06 //</span>
+      <h2>Conclusion</h2>
+    </div>
+    <div class="conclusion-box">
+      <p>This lab demonstrated that even routine browsing generates a significant amount of observable network traffic — much of it from background processes the user never directly initiated. The most critical finding was the ability to read plaintext HTTP headers in full, highlighting why unencrypted protocols are a serious risk on shared networks.</p>
+      <p>From a defensive perspective, this lab reinforced the importance of protocol encryption, network baselining, and continuous traffic monitoring. Understanding what normal traffic looks like is the foundation for detecting what isn't normal — a core skill for any SOC analyst.</p>
+      <p style="margin-bottom:0">Tools like Wireshark are equally valuable to attackers and defenders. This lab gave me practical experience on the defender side — but understanding the attacker's view of the same data is what makes this knowledge actionable.</p>
+      <div class="skills-demonstrated">
+        <span class="skill-pill">Packet Capture</span>
+        <span class="skill-pill">Display Filtering</span>
+        <span class="skill-pill">DNS Analysis</span>
+        <span class="skill-pill">HTTP Interception</span>
+        <span class="skill-pill">TCP Analysis</span>
+        <span class="skill-pill">Security Reporting</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div><a href="../index.html" style="color:var(--green);text-decoration:none;">← Back to Portfolio</a></div>
+  <div>MAXIMILIIAN_CHRISTIANSEN // Packet Capture Lab</div>
+  <div style="color:var(--green)">$ _</div>
+</footer>
+
+</body>
+</html>
